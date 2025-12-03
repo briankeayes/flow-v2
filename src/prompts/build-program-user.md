@@ -1,42 +1,60 @@
-Please build a program sequence that achieves the following requirements:
+Please build a programme sequence that achieves the following requirements:
 
-## PROGRAM REQUIREMENTS:
+## PROGRAMME REQUIREMENTS:
 - **Group Size**: {{group_size}}
 - **Available Time**: {{available_time}}
-- **Program Outcome/Objective**: {{program_outcome}}
+- **Programme Outcome/Objective**: {{program_outcome}}
 - **Group Type**: {{group_type}}
 - **Level of Exertion**: {{level_of_exertion}}
 {{#if group_stage}}- **Group Developmental Stage**: {{group_stage}}{{/if}}
 {{#if lazy_preference}}- **Lazy Rating Preference**: {{lazy_preference}}{{/if}}
 
+## AVAILABLE ACTIVITIES:
+
+⚠️ **CRITICAL**: You MUST ONLY select activities from this list. NEVER invent or hallucinate activity names.
+
+{{activity_list}}
+
 ## YOUR TASK:
 
-**Generate a program immediately** with the following requirements:
+**Generate a programme immediately** with the following requirements:
 
-1. **Select activities** that:
+1. **Select activities** from the list above that:
    - Align with the outcome/objective
-   - Fit within the available timeframe
-   - Default to lazy ratings 1-3 (unless specified otherwise)
+   - Fit within the available timeframe (use the TIME shown above)
+   - Use the EXACT URLs shown above for each activity
    - Provide variety (avoid repetition)
-   - Follow pedagogical progression (Play to Grow and PLAN > PRIME > PUMP > PEAK)
+   - Follow proper sequencing: ALWAYS start with icebreakers or connection activities (Play/Interact stages)
+   - For programmes over 60 minutes, emphasise connection activities in the first hour
 
-2. **Generate output** in this format:
+2. **Generate output** in this simple format:
    ```
-   [Program Name]
+   [Programme Name]
    
-   [Activity 1 Name] [URL] [time]
-   [Activity 2 Name] [URL] [time]
-   [Activity 3 Name] [URL] [time]
+   1. [Activity 1 Name] - [exact URL from list] - [time from list]
+   2. [Activity 2 Name] - [exact URL from list] - [time from list]
+   3. [Activity 3 Name] - [exact URL from list] - [time from list]
    ...
    
-   [Brief paragraph describing logic, total time and pedagogical flow]
+   [Brief paragraph describing the flow and logic in natural language - no jargon, no stage labels like PRIME/PUMP/PEAK]
+   
+   Total Time: [X minutes]
    ```
 
-Remember to:
-- Never repeat the same activity twice
-- Prioritize fun, interaction and connection in initial activities
-- Keep total program time within 20% of requested time
-- Make pedagogical progression implicit rather than explicit
+**CRITICAL RULES**:
+- ✅ ONLY use activities from the provided list above
+- ✅ Use EXACT activity names and URLs as shown in the list
+- ✅ Use time estimates from the list (shown as ranges like "10-15 min")
+- ✅ ALWAYS start with icebreakers, connection, or Play/Interact stage activities
+- ✅ Use UK English (organised, colour, programme, etc.)
+- ❌ NEVER invent activity names
+- ❌ NEVER make up URLs
+- ❌ NEVER use technical labels (PRIME, PUMP, PEAK, Play to Grow) in your output
+- ❌ NEVER repeat the same activity twice in a programme
+
+**Remember**:
+- Keep total programme time within 20% of requested time
+- Describe the flow naturally without jargon or technical frameworks
 - Use confidence language appropriately ("this should work well")
-- Acknowledge if no suitable activities exist in the database
+- If no suitable activities exist in the database, acknowledge this limitation honestly
 

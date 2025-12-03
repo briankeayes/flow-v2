@@ -609,7 +609,7 @@ interface FeatureProps {
 }
 
 function BuildProgram({ onBack }: FeatureProps) {
-  const [step, setStep] = useState<'input' | 'result'>('input')
+  const [step, setStep] = useState<'input' | 'confirm' | 'result'>('input')
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string>('')
   const [formData, setFormData] = useState({
@@ -630,6 +630,11 @@ function BuildProgram({ onBack }: FeatureProps) {
       return
     }
 
+    // Go to confirmation step instead of building immediately
+    setStep('confirm')
+  }
+
+  const handleConfirmBuild = async () => {
     setIsLoading(true)
     try {
       const response = await fetch('/api/build-program', {
@@ -740,6 +745,95 @@ function BuildProgram({ onBack }: FeatureProps) {
     return processedLines.join('\n')
   }
 
+  if (step === 'confirm') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="flex items-center mb-8">
+            <button
+              onClick={() => setStep('input')}
+              className="mr-4 px-4 py-2 text-gray-600 hover:text-gray-800 flex items-center"
+            >
+              ← Back
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800">Confirm Requirements</h1>
+          </div>
+
+          <div className="bg-white p-8 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4" style={{ color: '#189aca' }}>
+              Here's what I understand:
+            </h2>
+            
+            <div className="space-y-4 mb-8">
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Group Size</p>
+                <p className="text-lg text-gray-800">{formData.groupSize}</p>
+              </div>
+              
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Available Time</p>
+                <p className="text-lg text-gray-800">{formData.availableTime}</p>
+              </div>
+              
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Programme Outcome/Objective</p>
+                <p className="text-lg text-gray-800">{formData.programOutcome}</p>
+              </div>
+              
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Group Type</p>
+                <p className="text-lg text-gray-800">{formData.groupType}</p>
+              </div>
+              
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Level of Exertion</p>
+                <p className="text-lg text-gray-800 capitalize">{formData.levelOfExertion}</p>
+              </div>
+              
+              {formData.groupStage && (
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <p className="text-sm text-gray-600 font-medium">Group Developmental Stage</p>
+                  <p className="text-lg text-gray-800">{formData.groupStage}</p>
+                </div>
+              )}
+              
+              <div className="border-l-4 border-blue-500 pl-4">
+                <p className="text-sm text-gray-600 font-medium">Lazy Rating Preference</p>
+                <p className="text-lg text-gray-800">{formData.lazyPreference}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={handleConfirmBuild}
+                disabled={isLoading}
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                {isLoading ? 'Building Programme...' : '✓ Confirm & Build'}
+              </button>
+              
+              <button
+                onClick={() => setStep('input')}
+                disabled={isLoading}
+                className="flex-1 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                ✎ Edit
+              </button>
+              
+              <button
+                onClick={onBack}
+                disabled={isLoading}
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                ✕ Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (step === 'result') {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -751,7 +845,7 @@ function BuildProgram({ onBack }: FeatureProps) {
             >
               ← Back
             </button>
-            <h1 className="text-3xl font-bold text-gray-800">Your Program</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Your Programme</h1>
           </div>
 
           <div className="bg-white p-8 rounded-lg shadow-md">
@@ -777,47 +871,47 @@ function BuildProgram({ onBack }: FeatureProps) {
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-800">Build Program</h1>
-        </div>
+            <h1 className="text-3xl font-bold text-gray-800">Build Programme</h1>
+          </div>
 
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-6" style={{ color: '#189aca' }}>
-            Design Your Activity Sequence
-          </h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Group Size <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., 30 people, 50 students, 200 conference delegates"
-                value={formData.groupSize}
-                onChange={(e) => setFormData({ ...formData, groupSize: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
-                required
-              />
-            </div>
+          <div className="bg-white p-8 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-6" style={{ color: '#189aca' }}>
+              Design Your Activity Sequence
+            </h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Group Size <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., 30 people, 50 students, 200 conference delegates"
+                  value={formData.groupSize}
+                  onChange={(e) => setFormData({ ...formData, groupSize: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Available Time <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., 60 minutes, 2 hours, 30 mins"
-                value={formData.availableTime}
-                onChange={(e) => setFormData({ ...formData, availableTime: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Available Time <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., 60 minutes, 2 hours, 30 mins"
+                  value={formData.availableTime}
+                  onChange={(e) => setFormData({ ...formData, availableTime: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800"
+                  required
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Program Outcome/Objective <span className="text-red-500">*</span>
-              </label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Programme Outcome/Objective <span className="text-red-500">*</span>
+                </label>
               <textarea
                 placeholder="e.g., Build team cohesion, Energize conference attendees, Develop leadership skills"
                 value={formData.programOutcome}
@@ -893,7 +987,7 @@ function BuildProgram({ onBack }: FeatureProps) {
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              {isLoading ? 'Building Program...' : 'Build Program'}
+              Continue to Review →
             </button>
           </form>
         </div>

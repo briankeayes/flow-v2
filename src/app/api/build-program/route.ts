@@ -1,5 +1,85 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PromptManager } from '@/lib/prompt-manager'
+import fs from 'fs'
+import path from 'path'
+
+interface Activity {
+  title: string
+  id: string
+  slug: string
+  content: string
+  search_text: string
+}
+
+let activitiesCache: Activity[] | null = null
+
+function loadActivities(): Activity[] {
+  if (activitiesCache) {
+    return activitiesCache
+  }
+
+  try {
+    const filePath = path.join(process.cwd(), 'activities-search-index.json')
+    const data = fs.readFileSync(filePath, 'utf8')
+    activitiesCache = JSON.parse(data)
+    return activitiesCache || []
+  } catch (error) {
+    console.error('Error loading activities:', error)
+    return []
+  }
+}
+
+function extractActivityMetadata(activity: Activity): {
+  title: string
+  slug: string
+  url: string
+  time: string
+  type: string
+  groupSize: string
+  exertion: string
+} {
+  const lines = activity.search_text.split('\n')
+  
+  // Extract metadata from the "details" section
+  let time = ''
+  let type = ''
+  let groupSize = ''
+  let exertion = ''
+  
+  for (const line of lines) {
+    if (line.includes('- **time:**')) {
+      time = line.split('- **time:**')[1]?.trim() || ''
+    }
+    if (line.includes('- **type:**')) {
+      type = line.split('- **type:**')[1]?.trim() || ''
+    }
+    if (line.includes('- **no. people:**')) {
+      groupSize = line.split('- **no. people:**')[1]?.trim() || ''
+    }
+    if (line.includes('- **exertion:**')) {
+      exertion = line.split('- **exertion:**')[1]?.trim() || ''
+    }
+  }
+  
+  return {
+    title: activity.title,
+    slug: activity.slug,
+    url: `https://www.playmeo.com/activities/${activity.slug}/`,
+    time: time || '10-15 min',
+    type: type || 'Unknown',
+    groupSize: groupSize || 'Any',
+    exertion: exertion || 'Moderate'
+  }
+}
+
+function formatActivityListForPrompt(activities: Activity[]): string {
+  const formatted = activities.map(activity => {
+    const meta = extractActivityMetadata(activity)
+    return `- **${meta.title}** (${meta.slug}) - ${meta.url} - Time: ${meta.time} - Type: ${meta.type} - Group: ${meta.groupSize} - Exertion: ${meta.exertion}`
+  }).join('\n')
+  
+  return formatted
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +93,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Load all activities from database
+    const allActivities = loadActivities()
+    console.log(`Loaded ${allActivities.length} activities from database`)
+    
+    // Format activity list for injection into prompt
+    const activityList = formatActivityListForPrompt(allActivities)
+
     // Load prompts efficiently (cached) - includes shared context
     const [sharedContext, functionPrompt, userTemplate] = await Promise.all([
       PromptManager.getPrompt('shared-context'),
@@ -23,7 +110,7 @@ export async function POST(request: NextRequest) {
     // Combine shared context with function-specific prompt
     const systemPrompt = `${sharedContext}\n\n---\n\n${functionPrompt}`
 
-    // Format the user prompt with the specific requirements
+    // Format the user prompt with the specific requirements AND activity list
     const userPrompt = PromptManager.format(userTemplate, {
       group_size: groupSize,
       available_time: availableTime,
@@ -31,7 +118,8 @@ export async function POST(request: NextRequest) {
       group_type: groupType,
       level_of_exertion: levelOfExertion,
       group_stage: groupStage || '',
-      lazy_preference: lazyPreference || ''
+      lazy_preference: lazyPreference || '',
+      activity_list: activityList
     })
 
     // Debug logging
