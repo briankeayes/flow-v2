@@ -58,10 +58,24 @@ Please build a programme sequence that achieves the following requirements:
 - ✅ Use time estimates from the list (shown as ranges like "10-15 min")
 - ✅ ALWAYS start with icebreakers, connection, or Play/Interact stage activities
 - ✅ Use UK English (organised, colour, programme, etc.)
+- ✅ **PUT EACH ACTIVITY ON A SEPARATE LINE** - This is critical for formatting
 - ❌ NEVER invent activity names
 - ❌ NEVER make up URLs
 - ❌ NEVER use technical labels (PRIME, PUMP, PEAK, Play to Grow) in your output
 - ❌ NEVER repeat the same activity twice in a programme
+- ❌ NEVER put multiple activities on the same line
+
+**EXAMPLE OF CORRECT LINE BREAKS:**
+```
+1. **Activity One** - https://... - 5 min
+2. **Activity Two** - https://... - 10 min
+3. **Activity Three** - https://... - 15 min
+```
+
+**WRONG (DO NOT DO THIS):**
+```
+1. **Activity One** - https://... - 5 min 2. **Activity Two** - https://... - 10 min
+```
 
 **Remember**:
 - Keep total programme time within 20% of requested time

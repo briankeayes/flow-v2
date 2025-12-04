@@ -672,7 +672,21 @@ function BuildProgram({ onBack }: FeatureProps) {
         return
       }
       
-      setResult(data.program)
+      // Post-process to ensure proper line breaks between numbered activities
+      let processedProgram = data.program
+      
+      console.log('Original programme (first 500 chars):', processedProgram.substring(0, 500))
+      
+      // Fix activities that are on the same line: "1. Activity 2. Activity" → separate lines
+      // This regex finds patterns like "min 2." or "min  2." and adds a line break before the number
+      processedProgram = processedProgram.replace(/(\d+\.\s+\*\*[^*]+\*\*[^\n]*?min)\s+(\d+\.\s+\*\*)/g, '$1\n$2')
+      
+      // Also handle cases where activities run together without much spacing
+      processedProgram = processedProgram.replace(/(\S)\s+(\d+\.\s+\*\*)/g, '$1\n$2')
+      
+      console.log('Processed programme (first 500 chars):', processedProgram.substring(0, 500))
+      
+      setResult(processedProgram)
       setStep('result')
     } catch (error) {
       console.error('Build programme failed:', error)
