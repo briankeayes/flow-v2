@@ -73,12 +73,18 @@ function extractActivityMetadata(activity: Activity): {
 }
 
 function formatActivityListForPrompt(activities: Activity[]): string {
+  // Simplified format to reduce token usage - just essentials
   const formatted = activities.map(activity => {
     const meta = extractActivityMetadata(activity)
-    return `- **${meta.title}** (${meta.slug}) - ${meta.url} - Time: ${meta.time} - Type: ${meta.type} - Group: ${meta.groupSize} - Exertion: ${meta.exertion}`
+    // Format: Title|Slug|Time|Type
+    return `${meta.title}|${meta.slug}|${meta.time}|${meta.type}`
   }).join('\n')
   
-  return formatted
+  return `Each line format: Title|Slug|Time|Type
+URL format: https://www.playmeo.com/activities/[slug]/
+
+Activities:
+${formatted}`
 }
 
 export async function POST(request: NextRequest) {
@@ -124,10 +130,13 @@ export async function POST(request: NextRequest) {
 
     // Debug logging
     console.log('--- Debug Build Program ---')
+    console.log('Loaded Activities:', allActivities.length)
+    console.log('Activity List Length:', activityList?.length)
     console.log('Shared Context Length:', sharedContext?.length)
     console.log('Function Prompt Length:', functionPrompt?.length)
     console.log('Combined System Prompt Length:', systemPrompt?.length)
     console.log('User Prompt Length:', userPrompt?.length)
+    console.log('Total Estimated Tokens:', Math.ceil((systemPrompt?.length + userPrompt?.length) / 4))
     
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -151,12 +160,27 @@ export async function POST(request: NextRequest) {
 
     if (!openaiResponse.ok) {
       const errorBody = await openaiResponse.text()
+      console.error('OpenAI Error Status:', openaiResponse.status)
       console.error('OpenAI Error Body:', errorBody)
-      throw new Error(`OpenAI API error: ${openaiResponse.status} - ${errorBody}`)
+      return NextResponse.json(
+        { error: `OpenAI API error: ${openaiResponse.status}`, details: errorBody },
+        { status: openaiResponse.status }
+      )
     }
 
     const openaiData = await openaiResponse.json()
+    
+    if (!openaiData.choices || !openaiData.choices[0] || !openaiData.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', openaiData)
+      return NextResponse.json(
+        { error: 'Invalid response from OpenAI' },
+        { status: 500 }
+      )
+    }
+    
     const program = openaiData.choices[0].message.content
+
+    console.log('Programme generated successfully, length:', program?.length)
 
     return NextResponse.json({
       program: program,
@@ -173,8 +197,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Build program error:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
-      { error: 'Failed to build program' },
+      { error: 'Failed to build program', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }

@@ -637,6 +637,7 @@ function BuildProgram({ onBack }: FeatureProps) {
   const handleConfirmBuild = async () => {
     setIsLoading(true)
     try {
+      console.log('Sending request to build programme...')
       const response = await fetch('/api/build-program', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -651,12 +652,32 @@ function BuildProgram({ onBack }: FeatureProps) {
         })
       })
 
+      console.log('Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('API error:', errorData)
+        alert(`Failed to build programme: ${errorData.error}\n${errorData.details || ''}`)
+        setIsLoading(false)
+        return
+      }
+
       const data = await response.json()
+      console.log('Programme received, length:', data.program?.length)
+      
+      if (!data.program) {
+        console.error('No programme in response:', data)
+        alert('No programme was generated. Please try again.')
+        setIsLoading(false)
+        return
+      }
+      
       setResult(data.program)
       setStep('result')
     } catch (error) {
-      console.error('Build program failed:', error)
-      alert('Failed to build program. Please try again.')
+      console.error('Build programme failed:', error)
+      alert(`Failed to build programme: ${error instanceof Error ? error.message : String(error)}`)
+      setStep('confirm') // Stay on confirm page
     }
     setIsLoading(false)
   }
