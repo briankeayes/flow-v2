@@ -29,6 +29,24 @@ function loadActivities(): Activity[] {
   }
 }
 
+function getUrlCategoryFromType(type: string): string {
+  const typeMap: Record<string, string> = {
+    'reflection': 'debriefing-activities',
+    'team-building': 'team-building-problem-solving-activities',
+    'ice-breakers': 'ice-breakers-get-to-know-you-games',
+    'fun games': 'fun-games',
+    'health & wellness': 'health-wellness',
+    'trust': 'trust-building-games',
+    'energizers': 'energizer-warm-up-games',
+    'energisers': 'energizer-warm-up-games',
+    'tag & pe games': 'tag-pe-games',
+    'challenge course': 'challenge-course'
+  }
+  
+  const normalizedType = type.toLowerCase().trim()
+  return typeMap[normalizedType] || 'activities'
+}
+
 function extractActivityMetadata(activity: Activity): {
   title: string
   slug: string
@@ -61,10 +79,14 @@ function extractActivityMetadata(activity: Activity): {
     }
   }
   
+  // Construct proper URL with category path
+  const category = getUrlCategoryFromType(type)
+  const url = `https://www.playmeo.com/activities/${category}/${activity.slug}/`
+  
   return {
     title: activity.title,
     slug: activity.slug,
-    url: `https://www.playmeo.com/activities/${activity.slug}/`,
+    url: url,
     time: time || '10-15 min',
     type: type || 'Unknown',
     groupSize: groupSize || 'Any',
@@ -73,15 +95,16 @@ function extractActivityMetadata(activity: Activity): {
 }
 
 function formatActivityListForPrompt(activities: Activity[]): string {
-  // Simplified format to reduce token usage - just essentials
+  // Format with full URL to ensure AI uses correct URLs
   const formatted = activities.map(activity => {
     const meta = extractActivityMetadata(activity)
-    // Format: Title|Slug|Time|Type
-    return `${meta.title}|${meta.slug}|${meta.time}|${meta.type}`
+    // Format: Title|URL|Time|Type
+    return `${meta.title}|${meta.url}|${meta.time}|${meta.type}`
   }).join('\n')
   
-  return `Each line format: Title|Slug|Time|Type
-URL format: https://www.playmeo.com/activities/[slug]/
+  return `Each line format: Title|Full_URL|Time|Type
+
+⚠️ CRITICAL: Use the EXACT URLs provided below (second column). DO NOT construct your own URLs.
 
 Activities:
 ${formatted}`

@@ -21,8 +21,9 @@ Please build a programme sequence that achieves the following requirements:
 
 1. **Select activities** from the list above that:
    - Align with the outcome/objective
-   - Fit within the available timeframe (use the TIME shown above)
-   - Use the EXACT URLs shown above for each activity
+   - Fit within the available timeframe (use the TIME shown in column 3)
+   - **Use the EXACT URLs shown in column 2** - DO NOT modify or construct URLs
+   - Copy the full URL exactly as shown (includes category path like /debriefing-activities/)
    - Provide variety (avoid repetition)
    - Follow proper sequencing: ALWAYS start with icebreakers or connection activities (Play/Interact stages)
    - For programmes over 60 minutes, emphasise connection activities in the first hour
@@ -54,13 +55,15 @@ Please build a programme sequence that achieves the following requirements:
 
 **CRITICAL RULES**:
 - ✅ ONLY use activities from the provided list above
-- ✅ Use EXACT activity names and URLs as shown in the list
-- ✅ Use time estimates from the list (shown as ranges like "10-15 min")
+- ✅ Use EXACT activity names and URLs as shown in the list (column 2 has full URLs)
+- ✅ Copy URLs exactly - they include category paths like /debriefing-activities/ or /fun-games/
+- ✅ Use time estimates from the list (column 3, shown as ranges like "10-15 min")
 - ✅ ALWAYS start with icebreakers, connection, or Play/Interact stage activities
 - ✅ Use UK English (organised, colour, programme, etc.)
 - ✅ **PUT EACH ACTIVITY ON A SEPARATE LINE** - This is critical for formatting
 - ❌ NEVER invent activity names
-- ❌ NEVER make up URLs
+- ❌ NEVER construct URLs yourself - copy them exactly from the list
+- ❌ NEVER use simplified URLs like https://www.playmeo.com/activities/slug/ - use the full URL with category
 - ❌ NEVER use technical labels (PRIME, PUMP, PEAK, Play to Grow) in your output
 - ❌ NEVER repeat the same activity twice in a programme
 - ❌ NEVER put multiple activities on the same line

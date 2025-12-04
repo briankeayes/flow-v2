@@ -49,9 +49,13 @@ Use proper markdown formatting with headers, lists, and bold text:
 
 ### Activities:
 
-1. **[Activity 1 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
-2. **[Activity 2 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
-3. **[Activity 3 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
+1. **[Activity 1 Name]** - [exact URL from list] - [time]
+2. **[Activity 2 Name]** - [exact URL from list] - [time]
+3. **[Activity 3 Name]** - [exact URL from list] - [time]
+
+EXAMPLE:
+1. **Rose Debrief** - https://www.playmeo.com/activities/debriefing-activities/rose-debrief/ - 2-5 min
+2. **Chopsticks** - https://www.playmeo.com/activities/fun-games/chopsticks/ - 2-5 min
 
 ### Overview:
 
