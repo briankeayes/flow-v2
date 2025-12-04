@@ -27,19 +27,30 @@ Please build a programme sequence that achieves the following requirements:
    - Follow proper sequencing: ALWAYS start with icebreakers or connection activities (Play/Interact stages)
    - For programmes over 60 minutes, emphasise connection activities in the first hour
 
-2. **Generate output** in this simple format:
+2. **Generate output** in this exact format:
    ```
-   [Programme Name]
+   ## [Programme Name]
    
-   1. [Activity 1 Name] - [exact URL from list] - [time from list]
-   2. [Activity 2 Name] - [exact URL from list] - [time from list]
-   3. [Activity 3 Name] - [exact URL from list] - [time from list]
-   ...
+   ### Activities:
+   
+   1. **[Activity 1 Name]** - [exact URL from list] - [time from list]
+   2. **[Activity 2 Name]** - [exact URL from list] - [time from list]
+   3. **[Activity 3 Name]** - [exact URL from list] - [time from list]
+   
+   ### Overview:
    
    [Brief paragraph describing the flow and logic in natural language - no jargon, no stage labels like PRIME/PUMP/PEAK]
    
-   Total Time: [X minutes]
+   **Total Time:** [X minutes]
    ```
+
+**CRITICAL FORMATTING RULES:**
+- Use ## for programme name
+- Use ### for section headers (Activities, Overview)
+- Each activity MUST be on its own line
+- Use numbered list format (1. 2. 3. etc.)
+- URLs must be plain text, NOT markdown links [text](url)
+- Bold activity names with **Name**
 
 **CRITICAL RULES**:
 - ✅ ONLY use activities from the provided list above

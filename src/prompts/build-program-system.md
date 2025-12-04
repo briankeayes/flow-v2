@@ -49,11 +49,9 @@ Use proper markdown formatting with headers, lists, and bold text:
 
 ### Activities:
 
-1. **[Activity 1 Name]** - [URL] - [time]
-2. **[Activity 2 Name]** - [URL] - [time]
-3. **[Activity 3 Name]** - [URL] - [time]
-4. **[Activity 4 Name]** - [URL] - [time]
-5. **[Activity 5 Name]** - [URL] - [time]
+1. **[Activity 1 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
+2. **[Activity 2 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
+3. **[Activity 3 Name]** - https://www.playmeo.com/activities/[slug]/ - [time]
 
 ### Overview:
 
@@ -61,6 +59,14 @@ Use proper markdown formatting with headers, lists, and bold text:
 
 **Total Time**: [X minutes]
 ```
+
+**CRITICAL FORMATTING RULES**:
+- Each activity MUST be on its own line
+- Use numbered list format: 1. 2. 3. (with periods and spaces)
+- URLs must be PLAIN TEXT, not markdown links like [text](url)
+- Bold activity names: **Name**
+- DO NOT use markdown link syntax [](  ) - just write the URL directly
+- Each numbered item must start on a new line
 
 **CRITICAL OUTPUT RULES**:
 - DO NOT include "Key Considerations" or similar technical sub-headings

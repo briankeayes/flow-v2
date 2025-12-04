@@ -685,17 +685,30 @@ function BuildProgram({ onBack }: FeatureProps) {
   const formatMarkdownForDisplay = (markdown: string) => {
     if (!markdown) return ''
     
+    // Helper to convert URLs to clickable links
+    const linkifyUrls = (text: string): string => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g
+      return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
+    }
+    
+    // Helper to convert bold text
+    const convertBold = (text: string): string => {
+      return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
+    }
+    
     const lines = markdown.split('\n')
     const processedLines: string[] = []
-    let inList = false
+    let inOrderedList = false
+    let inUnorderedList = false
     let currentParagraph: string[] = []
 
     const flushParagraph = () => {
       if (currentParagraph.length > 0) {
         const paraText = currentParagraph.join(' ').trim()
         if (paraText) {
-          const withBold = paraText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-          processedLines.push(`<p class="mb-4 text-gray-800 leading-relaxed">${withBold}</p>`)
+          let formatted = convertBold(paraText)
+          formatted = linkifyUrls(formatted)
+          processedLines.push(`<p class="mb-4 text-gray-800 leading-relaxed">${formatted}</p>`)
         }
         currentParagraph = []
       }
@@ -706,18 +719,27 @@ function BuildProgram({ onBack }: FeatureProps) {
 
       if (!trimmed) {
         flushParagraph()
-        if (inList) {
+        if (inOrderedList) {
+          processedLines.push('</ol>')
+          inOrderedList = false
+        }
+        if (inUnorderedList) {
           processedLines.push('</ul>')
-          inList = false
+          inUnorderedList = false
         }
         return
       }
 
+      // Headers
       if (trimmed.startsWith('### ')) {
         flushParagraph()
-        if (inList) {
+        if (inOrderedList) {
+          processedLines.push('</ol>')
+          inOrderedList = false
+        }
+        if (inUnorderedList) {
           processedLines.push('</ul>')
-          inList = false
+          inUnorderedList = false
         }
         processedLines.push(`<h3 class="text-xl font-semibold mt-6 mb-3 text-gray-900">${trimmed.substring(4)}</h3>`)
         return
@@ -725,9 +747,13 @@ function BuildProgram({ onBack }: FeatureProps) {
 
       if (trimmed.startsWith('#### ')) {
         flushParagraph()
-        if (inList) {
+        if (inOrderedList) {
+          processedLines.push('</ol>')
+          inOrderedList = false
+        }
+        if (inUnorderedList) {
           processedLines.push('</ul>')
-          inList = false
+          inUnorderedList = false
         }
         processedLines.push(`<h4 class="text-lg font-medium mt-4 mb-2 text-gray-900">${trimmed.substring(5)}</h4>`)
         return
@@ -735,31 +761,64 @@ function BuildProgram({ onBack }: FeatureProps) {
 
       if (trimmed.startsWith('## ')) {
         flushParagraph()
-        if (inList) {
+        if (inOrderedList) {
+          processedLines.push('</ol>')
+          inOrderedList = false
+        }
+        if (inUnorderedList) {
           processedLines.push('</ul>')
-          inList = false
+          inUnorderedList = false
         }
         processedLines.push(`<h2 class="text-2xl font-bold mt-8 mb-4 text-gray-900 border-b border-gray-200 pb-2">${trimmed.substring(3)}</h2>`)
         return
       }
 
-      if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+      // Numbered list items (1. 2. 3. etc.)
+      const numberedMatch = trimmed.match(/^(\d+)\.\s+(.+)/)
+      if (numberedMatch) {
         flushParagraph()
-        const listText = trimmed.replace(/^[-•]\s*/, '').trim()
-        if (!inList) {
-          processedLines.push('<ul class="list-disc ml-6 mb-4 space-y-1">')
-          inList = true
+        if (inUnorderedList) {
+          processedLines.push('</ul>')
+          inUnorderedList = false
         }
-        const withBold = listText.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-        processedLines.push(`<li class="text-gray-800">${withBold}</li>`)
+        const listText = numberedMatch[2].trim()
+        if (!inOrderedList) {
+          processedLines.push('<ol class="list-decimal ml-6 mb-4 space-y-2">')
+          inOrderedList = true
+        }
+        let formatted = convertBold(listText)
+        formatted = linkifyUrls(formatted)
+        processedLines.push(`<li class="text-gray-800">${formatted}</li>`)
         return
       }
 
+      // Bullet list items (- or •)
+      if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+        flushParagraph()
+        if (inOrderedList) {
+          processedLines.push('</ol>')
+          inOrderedList = false
+        }
+        const listText = trimmed.replace(/^[-•]\s*/, '').trim()
+        if (!inUnorderedList) {
+          processedLines.push('<ul class="list-disc ml-6 mb-4 space-y-1">')
+          inUnorderedList = true
+        }
+        let formatted = convertBold(listText)
+        formatted = linkifyUrls(formatted)
+        processedLines.push(`<li class="text-gray-800">${formatted}</li>`)
+        return
+      }
+
+      // Regular text - add to current paragraph
       currentParagraph.push(trimmed)
     })
 
     flushParagraph()
-    if (inList) {
+    if (inOrderedList) {
+      processedLines.push('</ol>')
+    }
+    if (inUnorderedList) {
       processedLines.push('</ul>')
     }
 
