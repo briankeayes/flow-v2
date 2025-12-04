@@ -684,6 +684,14 @@ function BuildProgram({ onBack }: FeatureProps) {
       // Also handle cases where activities run together without much spacing
       processedProgram = processedProgram.replace(/(\S)\s+(\d+\.\s+\*\*)/g, '$1\n$2')
       
+      // Replace full URLs with "Link" text but keep the URL as href
+      // Pattern: activity name - https://url - time
+      // Replace with: activity name - <a href="url">Link</a> - time
+      processedProgram = processedProgram.replace(
+        /(\*\*[^*]+\*\*)\s*-\s*(https:\/\/www\.playmeo\.com\/activities\/[^\s]+)\s*-\s*/g,
+        '$1 - <a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline font-medium">Link</a> - '
+      )
+      
       console.log('Processed programme (first 500 chars):', processedProgram.substring(0, 500))
       
       setResult(processedProgram)
@@ -699,8 +707,10 @@ function BuildProgram({ onBack }: FeatureProps) {
   const formatMarkdownForDisplay = (markdown: string) => {
     if (!markdown) return ''
     
-    // Helper to convert URLs to clickable links
+    // Helper to convert URLs to clickable links (only if not already processed)
     const linkifyUrls = (text: string): string => {
+      // Skip if text already contains <a> tags (already processed)
+      if (text.includes('<a href=')) return text
       const urlRegex = /(https?:\/\/[^\s]+)/g
       return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
     }
